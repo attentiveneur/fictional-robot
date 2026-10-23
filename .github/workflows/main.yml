@@ -84,9 +84,10 @@ jobs:
       # 4 硬校验：清单里缺一项就中止，别浪费时间编译
       # ============================================================
       - name: 4 源码硬校验
+        env:
+          SRC: ${{ steps.locate.outputs.SRC }}
         run: |
           set -eu
-          SRC="${{ steps.locate.outputs.SRC }}"
           APP="$SRC/ThreeOneOSFive"
           PBX="$SRC/ThreeOneOSFive.xcodeproj/project.pbxproj"
           PLIST="$APP/Info.plist"
@@ -305,9 +306,10 @@ jobs:
       # 5 编译（不签名）
       # ============================================================
       - name: 5 编译（失败也把 error 摘出来）
+        env:
+          SRC: ${{ steps.locate.outputs.SRC }}
         run: |
           set +e
-          SRC="${{ steps.locate.outputs.SRC }}"
           cd "$SRC" || { echo "::error title=出错::进不去源码目录"; exit 1; }
           echo "==== 开始编译 v31.0 ===="
           xcodebuild \
@@ -368,9 +370,10 @@ jobs:
       #   - 打完立刻用 Python 真解压一遍回验（CRC 全校验），坏包当场拦住
       # ============================================================
       - name: 6 打 ipa（两份 + 真解压回验）
+        env:
+          SRC: ${{ steps.locate.outputs.SRC }}
         run: |
           set -eu
-          SRC="${{ steps.locate.outputs.SRC }}"
           APP=$(find "$SRC/build/Build/Products/Release-iphoneos" -maxdepth 1 -name "*.app" | head -n 1)
           if [ -z "$APP" ]; then
             echo "::error::没编出 .app"
